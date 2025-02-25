@@ -42,9 +42,8 @@ export async function POST(request: Request) {
     // Check if name already exists
     const nameExists = existingNames.some(entry => entry.name === name)
     if (!nameExists) {
-      existingNames.unshift({ name, timestamp })
-      // Keep only the last 10 unique names
-      existingNames = existingNames.slice(0, 10)
+      const updatedNames = [{ name, timestamp }, ...existingNames].slice(0, 10)
+      existingNames = updatedNames
     }
 
     // Update file
