@@ -83,7 +83,8 @@ export default function GulfPage() {
             mapTypeControl: false,
             fullscreenControl: false,
             streetViewControl: false,
-            disableDefaultUI: true
+            disableDefaultUI: true,
+            disableDoubleClickZoom: true
           }}
         >
             <OverlayView
