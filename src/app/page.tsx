@@ -2,9 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { GoogleMap, LoadScript, Marker, OverlayView } from '@react-google-maps/api'
+import { useSearchParams, useRouter } from 'next/navigation'
 
 export default function GulfPage() {
-  const [gulfName, setGulfName] = useState('Mexico')
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const [gulfName, setGulfName] = useState(searchParams.get('name') || 'Mexico')
   const [recentNames, setRecentNames] = useState<string[]>([])
   
   const mapCenter = {
@@ -49,6 +52,13 @@ export default function GulfPage() {
     }
   }
 
+  const updateGulfName = (newName: string) => {
+    setGulfName(newName)
+    const params = new URLSearchParams()
+    params.set('name', newName)
+    router.push(`?${params.toString()}`)
+  }
+
   return (
     <div className="container mx-auto p-4">
       <div className="mb-8">
@@ -58,7 +68,7 @@ export default function GulfPage() {
           <input
             type="text"
             value={gulfName}
-            onChange={(e) => setGulfName(e.target.value)}
+            onChange={(e) => updateGulfName(e.target.value)}
             className="border text-black rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter name"
           />
@@ -112,7 +122,7 @@ export default function GulfPage() {
             <li 
               key={index}
               className="cursor-pointer hover:text-blue-500"
-              onClick={() => setGulfName(name)}
+              onClick={() => updateGulfName(name)}
             >
               Gulf of {name}
             </li>
