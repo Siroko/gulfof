@@ -9,7 +9,7 @@ export default function GulfPage() {
   
   const mapCenter = {
     lat: 25.5,
-    lng: -90.0
+    lng: -90.0 
   }
 
   const labelPosition = {
