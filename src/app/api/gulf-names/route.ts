@@ -21,6 +21,8 @@ export async function POST(request: Request) {
   try {
     // Get current file content
     let existingNames: GulfName[] = []
+    let fileSha = ''
+    
     try {
       const { data } = await octokit.repos.getContent({
         owner,
@@ -28,24 +30,31 @@ export async function POST(request: Request) {
         path,
       })
       
-      if ('content' in data) {
+      if ('content' in data && !Array.isArray(data)) {
         const content = Buffer.from(data.content, 'base64').toString()
         existingNames = JSON.parse(content)
+        fileSha = data.sha
       }
     } catch (error) {
       // File doesn't exist yet, use empty array
     }
 
-    const updatedNames = [{ name, timestamp }, ...existingNames].slice(0, 10)
+    // Check if name already exists
+    const nameExists = existingNames.some(entry => entry.name === name)
+    if (!nameExists) {
+      existingNames.unshift({ name, timestamp })
+      // Keep only the last 10 unique names
+      existingNames = existingNames.slice(0, 10)
+    }
 
     // Update file
     await octokit.repos.createOrUpdateFileContents({
       owner,
       repo,
       path,
-      message: `Update Gulf names`,
-      content: Buffer.from(JSON.stringify(updatedNames, null, 2)).toString('base64'),
-      ...(existingNames.length > 0 ? { sha: (await octokit.repos.getContent({ owner, repo, path })).data.sha } : {})
+      message: `Add Gulf name: ${name}`,
+      content: Buffer.from(JSON.stringify(existingNames, null, 2)).toString('base64'),
+      ...(fileSha ? { sha: fileSha } : {})
     })
 
     return NextResponse.json({ success: true })
@@ -63,7 +72,7 @@ export async function GET() {
       path,
     })
 
-    if ('content' in data) {
+    if ('content' in data && !Array.isArray(data)) {
       const content = Buffer.from(data.content, 'base64').toString()
       return NextResponse.json(JSON.parse(content))
     }
