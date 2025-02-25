@@ -1,24 +1,52 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { GoogleMap, LoadScript, Marker, OverlayView } from '@react-google-maps/api'
 
-const GulfPage = () => {
+export default function GulfPage() {
   const [gulfName, setGulfName] = useState('Mexico')
+  const [recentNames, setRecentNames] = useState<string[]>([])
   
   const mapCenter = {
     lat: 25.5,
     lng: -90.0
   }
-  
+
+  const labelPosition = {
+    lat: 26.9, // Position the label above the marker
+    lng: -90.0
+  }
+
   const mapStyles = {
     height: '70vh',
     width: '100%'
   }
 
-  const labelPosition = {
-    lat: 26.9, // Position the label above the marker
-    lng: -90.0
+  useEffect(() => {
+    fetchRecentNames()
+  }, [])
+
+  const fetchRecentNames = async () => {
+    try {
+      const response = await fetch('/api/gulf-names')
+      const data = await response.json()
+      setRecentNames(data.map((item: { name: string }) => item.name))
+    } catch (error) {
+      console.error('Error fetching names:', error)
+    }
+  }
+
+  const handleSaveName = async () => {
+    try {
+      await fetch('/api/gulf-names', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: gulfName }),
+      })
+      fetchRecentNames()
+    } catch (error) {
+      console.error('Error saving name:', error)
+    }
   }
 
   return (
@@ -31,9 +59,15 @@ const GulfPage = () => {
             type="text"
             value={gulfName}
             onChange={(e) => setGulfName(e.target.value)}
-            className="border text-black rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 w-[200px]"
+            className="border text-black rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter name"
           />
+          <button
+            onClick={handleSaveName}
+            className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 transition-colors"
+          >
+            Save
+          </button>
         </div>
       </div>
 
@@ -43,11 +77,12 @@ const GulfPage = () => {
           zoom={5}
           center={mapCenter}
           options={{
-            mapTypeId: 'roadmap',
+            scrollwheel: false,
+            gestureHandling: 'panning',
             zoomControl: false
           }}
         >
-          <OverlayView
+            <OverlayView
             position={labelPosition}
             mapPaneName={OverlayView.OVERLAY_LAYER}
           >
@@ -58,18 +93,27 @@ const GulfPage = () => {
               Gulf of {gulfName}
             </div>
           </OverlayView>
-          
           <Marker
             position={mapCenter}
+            title={`Gulf of ${gulfName}`}
           />
         </GoogleMap>
       </LoadScript>
 
-      <div className="mt-4 text-sm text-gray-600">
-        <p>Click the text field above to rename the Gulf of {gulfName}</p>
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold mb-2">Recent Names</h2>
+        <ul className="space-y-1">
+          {recentNames.map((name, index) => (
+            <li 
+              key={index}
+              className="cursor-pointer hover:text-blue-500"
+              onClick={() => setGulfName(name)}
+            >
+              Gulf of {name}
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   )
-}
-
-export default GulfPage 
+} 
