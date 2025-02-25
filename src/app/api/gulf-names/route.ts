@@ -35,14 +35,14 @@ export async function POST(request: Request) {
         existingNames = JSON.parse(content)
         fileSha = data.sha
       }
-    } catch (error) {
+    } catch {
       // File doesn't exist yet, use empty array
     }
 
     // Check if name already exists
     const nameExists = existingNames.some(entry => entry.name === name)
     if (!nameExists) {
-      const updatedNames = [{ name, timestamp }, ...existingNames].slice(0, 10)
+      const updatedNames = [{ name, timestamp }, ...existingNames]
       existingNames = updatedNames
     }
 
@@ -57,8 +57,8 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('Error:', error)
+  } catch {
+    console.error('Failed to save name')
     return NextResponse.json({ error: 'Failed to save name' }, { status: 500 })
   }
 }
@@ -76,7 +76,7 @@ export async function GET() {
       return NextResponse.json(JSON.parse(content))
     }
     return NextResponse.json([])
-  } catch (error) {
+  } catch {
     return NextResponse.json([])
   }
 } 
