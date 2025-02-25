@@ -13,7 +13,7 @@ export default function GulfPage() {
   }
 
   const labelPosition = {
-    lat: 25.1, // Position the label above the marker
+    lat: 26.9, // Position the label above the marker
     lng: -90.0
   }
 
@@ -92,7 +92,7 @@ export default function GulfPage() {
             mapPaneName={OverlayView.OVERLAY_LAYER}
           >
             <div className="text-[#148299] text-[11px] font-normal tracking-wide px-20 py-10
-                          transform -translate-x-1/2 -translate-y-1/2 select-none
+                          transform -translate-x-1/2 select-none
                           bg-[#72d4e8] min-w-[250px] text-center
                           font-['Google_Sans_Text',_'Roboto',_Arial,_sans-serif]">
               Gulf of {gulfName}
