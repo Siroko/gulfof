@@ -79,8 +79,11 @@ export default function GulfPage() {
           options={{
             scrollwheel: false,
             gestureHandling: 'panning',
-            zoomControl: false, 
-            mapTypeControl: false
+            zoomControl: false,
+            mapTypeControl: false,
+            fullscreenControl: false,
+            streetViewControl: false,
+            disableDefaultUI: true
           }}
         >
             <OverlayView
