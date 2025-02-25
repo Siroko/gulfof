@@ -13,7 +13,7 @@ export default function GulfPage() {
   }
 
   const labelPosition = {
-    lat: 25.3, // Position the label above the marker
+    lat: 25.1, // Position the label above the marker
     lng: -90.0
   }
 
