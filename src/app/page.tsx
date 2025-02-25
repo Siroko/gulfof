@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { GoogleMap, LoadScript, Marker, OverlayView } from '@react-google-maps/api'
 import { useSearchParams, useRouter } from 'next/navigation'
 
-export default function GulfPage() {
+function GulfPageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [gulfName, setGulfName] = useState(searchParams.get('name') || 'Mexico')
@@ -130,5 +130,13 @@ export default function GulfPage() {
         </ul>
       </div>
     </div>
+  )
+}
+
+export default function GulfPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <GulfPageContent />
+    </Suspense>
   )
 } 
